@@ -82,8 +82,22 @@ namespace:  11 bytes
 token:      
 eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtYWRtaW4tdG9rZW4tbHBzc2oiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiOGUxNzM3YjUtNjE3OC0xMWU5LWJlMTktMDAwYzI5M2YxNDg2Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZC1hZG1pbiJ9.KHTf4_3DJu0liKeoOIoCssmIRXSHM_A4w9XVJKQ44jqEfPSbpwohqKnHxOspWAWsjwRrc3kSQyC9KEDCfTYl91ZY_PzUSqPG8XY58ab1p9q1xUxdDYu3qCyaSHWTQ2dATl1G5nNZQLfrarwWIPurm0BLBLsR1crIQj1P8VGafJJXz-TCQZgiw1OHqB8w89IBUhGrn8vuaIdspNLNZmrl-icjFS4eAevBREwlxqxX0-3-mzTFE8xqCHyfJ7pKpK-Jv1jSpuHjb0CfDPvNBuAGp5jQG44Ya6wq1BcqQO4RiQ07hjfIrnwmfWyZWmBn9YLvBVByupLv872kUUSSxjxxbg
 # ------
+
+# 生成kubeconfig登录dashboard
+# 1. 获取token 
+kubectl describe secret -n kube-system dashboard-admin
+# 2. 生成kubeconfig文件
+DASH_TOCKEN=$(kubectl get secret -n kube-system dashboard-admin-token-pb78x -o jsonpath={.data.token}|base64 -d)
+# --server=ip根据你实际情况调整
+kubectl config set-cluster kubernetes --server=192.168.1.188:6443 --kubeconfig=/root/dashbord-admin.conf
+
+kubectl config set-credentials dashboard-admin --token=$DASH_TOCKEN --kubeconfig=/root/dashbord-admin.conf
+
+kubectl config set-context dashboard-admin@kubernetes --cluster=kubernetes --user=dashboard-admin --kubeconfig=/root/dashbord-admin.conf
+
+kubectl config use-context dashboard-admin@kubernetes --kubeconfig=/root/dashbord-admin.conf
 ```
 
-使用生成的tocken就可以登录dashboard了。
+使用生成的token或dashbord-admin.conf就可以登录dashboard了。
 
 ![dashboard概况](/home/freeze/Document/gitbook/static/1555423252759.png)
